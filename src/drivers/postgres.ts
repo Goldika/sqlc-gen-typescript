@@ -45,7 +45,8 @@ function funcParamsDecl(iface: string | undefined, params: Parameter[]) {
 }
 
 export class Driver {
-  columnType(column?: Column): TypeNode {
+  columnType(opts: { column?: Column; declType: "arg" | "row" }): TypeNode {
+    const { column, declType } = opts;
     if (column === undefined || column.type === undefined) {
       return factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
     }

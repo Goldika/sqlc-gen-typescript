@@ -48,7 +48,7 @@ interface Options {
 
 interface Driver {
   preamble: (queries: Query[]) => Node[];
-  columnType: (c?: Column) => TypeNode;
+  columnType: (opts: { column?: Column; declType: "arg" | "row" }) => TypeNode;
   execDecl: (
     name: string,
     text: string,
@@ -237,11 +237,7 @@ function queryDecl(name: string, sql: string) {
   );
 }
 
-function argsDecl(
-  name: string,
-  driver: Driver,
-  params: Parameter[]
-) {
+function argsDecl(name: string, driver: Driver, params: Parameter[]) {
   return factory.createInterfaceDeclaration(
     [factory.createToken(SyntaxKind.ExportKeyword)],
     factory.createIdentifier(name),
@@ -252,17 +248,13 @@ function argsDecl(
         undefined,
         factory.createIdentifier(argName(i, param.column)),
         undefined,
-        driver.columnType(param.column)
+        driver.columnType({ column: param.column, declType: "arg" })
       )
     )
   );
 }
 
-function rowDecl(
-  name: string,
-  driver: Driver,
-  columns: Column[]
-) {
+function rowDecl(name: string, driver: Driver, columns: Column[]) {
   return factory.createInterfaceDeclaration(
     [factory.createToken(SyntaxKind.ExportKeyword)],
     factory.createIdentifier(name),
@@ -273,7 +265,7 @@ function rowDecl(
         undefined,
         factory.createIdentifier(colName(i, column)),
         undefined,
-        driver.columnType(column)
+        driver.columnType({ column, declType: "row" })
       )
     )
   );

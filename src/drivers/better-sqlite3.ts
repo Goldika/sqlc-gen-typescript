@@ -49,7 +49,8 @@ export class Driver {
    * {@link https://github.com/WiseLibs/better-sqlite3/blob/v9.4.1/docs/api.md#binding-parameters}
    * {@link https://github.com/sqlc-dev/sqlc/blob/v1.25.0/internal/codegen/golang/sqlite_type.go}
    */
-  columnType(column?: Column): TypeNode {
+  columnType(opts: { column?: Column; declType: "arg" | "row" }): TypeNode {
+    const { column, declType } = opts;
     if (column === undefined || column.type === undefined) {
       return factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
     }

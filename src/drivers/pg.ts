@@ -45,7 +45,8 @@ function funcParamsDecl(iface: string | undefined, params: Parameter[]) {
 }
 
 export class Driver {
-  columnType(column?: Column): TypeNode {
+  columnType(opts: { column?: Column; declType: "arg" | "row" }): TypeNode {
+    const { column, declType } = opts;
     if (column === undefined || column.type === undefined) {
       return factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
     }
@@ -56,268 +57,527 @@ export class Driver {
       typeName = typeName.slice(pgCatalog.length);
     }
     let typ: TypeNode = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
-    switch (typeName) {
-      case "aclitem": {
-        // string
-        break;
+    if (declType === "arg") {
+      switch (typeName) {
+        case "aclitem": {
+          // string
+          break;
+        }
+        case "bigserial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "bit": {
+          // string
+          break;
+        }
+        case "bool": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
+          break;
+        }
+        case "box": {
+          // string
+          break;
+        }
+        case "bpchar": {
+          // string
+          break;
+        }
+        case "bytea": {
+          // TODO: Is this correct or node-specific?
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Buffer"),
+            undefined
+          );
+          break;
+        }
+        case "cid": {
+          // string
+          break;
+        }
+        case "cidr": {
+          // string
+          break;
+        }
+        case "circle": {
+          typ = factory.createTypeLiteralNode([
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("x"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("y"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("radius"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+          ]);
+          break;
+        }
+        case "date": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Date"),
+            undefined
+          );
+          break;
+        }
+        case "float4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "float8": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "inet": {
+          // string
+          break;
+        }
+        case "int2": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "int4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "int8": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "bigint": {
+          typ = factory.createUnionTypeNode([
+            factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
+          ]);
+          break;
+        }
+        case "interval": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("IPostgresInterval"),
+            undefined
+          );
+          break;
+        }
+        case "json": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
+          break;
+        }
+        case "jsonb": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
+          break;
+        }
+        case "line": {
+          // string
+          break;
+        }
+        case "lseg": {
+          // string
+          break;
+        }
+        case "madaddr": {
+          // string
+          break;
+        }
+        case "madaddr8": {
+          // string
+          break;
+        }
+        case "money": {
+          // string
+          break;
+        }
+        case "oid": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "path": {
+          // string
+          break;
+        }
+        case "pg_node_tree": {
+          // string
+          break;
+        }
+        case "pg_snapshot": {
+          // string
+          break;
+        }
+        case "point": {
+          typ = factory.createTypeLiteralNode([
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("x"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("y"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+          ]);
+          break;
+        }
+        case "polygon": {
+          // string
+          break;
+        }
+        case "regproc": {
+          // string
+          break;
+        }
+        case "regrole": {
+          // string
+          break;
+        }
+        case "serial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial2": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial8": {
+          // string
+          break;
+        }
+        case "smallserial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "tid": {
+          // string
+          break;
+        }
+        case "text": {
+          // string
+          break;
+        }
+        case "time": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Date"),
+            undefined
+          );
+          break;
+        }
+        case "timetz": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Date"),
+            undefined
+          );
+          break;
+        }
+        case "timestamp": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Date"),
+            undefined
+          );
+          break;
+        }
+        case "timestamptz": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Date"),
+            undefined
+          );
+          break;
+        }
+        case "tsquery": {
+          // string
+          break;
+        }
+        case "tsvector": {
+          // string
+          break;
+        }
+        case "txid_snapshot": {
+          // string
+          break;
+        }
+        case "uuid": {
+          // string
+          break;
+        }
+        case "varbit": {
+          // string
+          break;
+        }
+        case "varchar": {
+          // string
+          break;
+        }
+        case "xid": {
+          // string
+          break;
+        }
+        case "xml": {
+          // string
+          break;
+        }
       }
-      case "bigserial": {
-        // string
-        break;
-      }
-      case "bit": {
-        // string
-        break;
-      }
-      case "bool": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
-        break;
-      }
-      case "box": {
-        // string
-        break;
-      }
-      case "bpchar": {
-        // string
-        break;
-      }
-      case "bytea": {
-        // TODO: Is this correct or node-specific?
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Buffer"),
-          undefined
-        );
-        break;
-      }
-      case "cid": {
-        // string
-        break;
-      }
-      case "cidr": {
-        // string
-        break;
-      }
-      case "circle": {
-        typ = factory.createTypeLiteralNode([
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("x"),
-            undefined,
-            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
-          ),
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("y"),
-            undefined,
-            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
-          ),
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("radius"),
-            undefined,
-            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
-          ),
-        ]);
-        break;
-      }
-      case "date": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Date"),
-          undefined
-        );
-        break;
-      }
-      case "float4": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "float8": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "inet": {
-        // string
-        break;
-      }
-      case "int2": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "int4": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "int8": {
-        // string
-        break;
-      }
-      case "interval": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("IPostgresInterval"),
-          undefined
-        );
-        break;
-      }
-      case "json": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
-        break;
-      }
-      case "jsonb": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
-        break;
-      }
-      case "line": {
-        // string
-        break;
-      }
-      case "lseg": {
-        // string
-        break;
-      }
-      case "madaddr": {
-        // string
-        break;
-      }
-      case "madaddr8": {
-        // string
-        break;
-      }
-      case "money": {
-        // string
-        break;
-      }
-      case "oid": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "path": {
-        // string
-        break;
-      }
-      case "pg_node_tree": {
-        // string
-        break;
-      }
-      case "pg_snapshot": {
-        // string
-        break;
-      }
-      case "point": {
-        typ = factory.createTypeLiteralNode([
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("x"),
-            undefined,
-            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
-          ),
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("y"),
-            undefined,
-            factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
-          ),
-        ]);
-        break;
-      }
-      case "polygon": {
-        // string
-        break;
-      }
-      case "regproc": {
-        // string
-        break;
-      }
-      case "regrole": {
-        // string
-        break;
-      }
-      case "serial": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "serial2": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "serial4": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "serial8": {
-        // string
-        break;
-      }
-      case "smallserial": {
-        typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-        break;
-      }
-      case "tid": {
-        // string
-        break;
-      }
-      case "text": {
-        // string
-        break;
-      }
-      case "time": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Date"),
-          undefined
-        );
-        break;
-      }
-      case "timetz": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Date"),
-          undefined
-        );
-        break;
-      }
-      case "timestamp": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Date"),
-          undefined
-        );
-        break;
-      }
-      case "timestamptz": {
-        typ = factory.createTypeReferenceNode(
-          factory.createIdentifier("Date"),
-          undefined
-        );
-        break;
-      }
-      case "tsquery": {
-        // string
-        break;
-      }
-      case "tsvector": {
-        // string
-        break;
-      }
-      case "txid_snapshot": {
-        // string
-        break;
-      }
-      case "uuid": {
-        // string
-        break;
-      }
-      case "varbit": {
-        // string
-        break;
-      }
-      case "varchar": {
-        // string
-        break;
-      }
-      case "xid": {
-        // string
-        break;
-      }
-      case "xml": {
-        // string
-        break;
+    } else {
+      switch (typeName) {
+        case "aclitem": {
+          // string
+          break;
+        }
+        case "bigserial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "bit": {
+          // string
+          break;
+        }
+        case "bool": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
+          break;
+        }
+        case "box": {
+          // string
+          break;
+        }
+        case "bpchar": {
+          // string
+          break;
+        }
+        case "bytea": {
+          // TODO: Is this correct or node-specific?
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("Buffer"),
+            undefined
+          );
+          break;
+        }
+        case "cid": {
+          // string
+          break;
+        }
+        case "cidr": {
+          // string
+          break;
+        }
+        case "circle": {
+          typ = factory.createTypeLiteralNode([
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("x"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("y"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("radius"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+          ]);
+          break;
+        }
+        case "date": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+          break;
+        }
+        case "float4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "float8": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "inet": {
+          // string
+          break;
+        }
+        case "int2": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "int4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "int8": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "interval": {
+          typ = factory.createTypeReferenceNode(
+            factory.createIdentifier("IPostgresInterval"),
+            undefined
+          );
+          break;
+        }
+        case "json": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
+          break;
+        }
+        case "jsonb": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.AnyKeyword);
+          break;
+        }
+        case "line": {
+          // string
+          break;
+        }
+        case "lseg": {
+          // string
+          break;
+        }
+        case "madaddr": {
+          // string
+          break;
+        }
+        case "madaddr8": {
+          // string
+          break;
+        }
+        case "money": {
+          // string
+          break;
+        }
+        case "oid": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "path": {
+          // string
+          break;
+        }
+        case "pg_node_tree": {
+          // string
+          break;
+        }
+        case "pg_snapshot": {
+          // string
+          break;
+        }
+        case "point": {
+          typ = factory.createTypeLiteralNode([
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("x"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("y"),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+            ),
+          ]);
+          break;
+        }
+        case "polygon": {
+          // string
+          break;
+        }
+        case "regproc": {
+          // string
+          break;
+        }
+        case "regrole": {
+          // string
+          break;
+        }
+        case "serial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial2": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial4": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "serial8": {
+          // string
+          break;
+        }
+        case "smallserial": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+          break;
+        }
+        case "tid": {
+          // string
+          break;
+        }
+        case "text": {
+          // string
+          break;
+        }
+        case "time": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+          break;
+        }
+        case "timetz": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+          break;
+        }
+        case "timestamp": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+          break;
+        }
+        case "timestamptz": {
+          typ = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+          break;
+        }
+        case "tsquery": {
+          // string
+          break;
+        }
+        case "tsvector": {
+          // string
+          break;
+        }
+        case "txid_snapshot": {
+          // string
+          break;
+        }
+        case "uuid": {
+          // string
+          break;
+        }
+        case "varbit": {
+          // string
+          break;
+        }
+        case "varchar": {
+          // string
+          break;
+        }
+        case "xid": {
+          // string
+          break;
+        }
+        case "xml": {
+          // string
+          break;
+        }
       }
     }
     if (column.isArray || column.arrayDims > 0) {
